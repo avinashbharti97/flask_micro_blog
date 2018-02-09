@@ -22,7 +22,7 @@ def coonect_db():
 def login():
     return render_template('login.html')
 
-@app.route('/')
+@app.route('/main')
 def main():
     return render_template('main.html')
 if __name__ == '__main__':
