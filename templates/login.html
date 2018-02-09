@@ -1,7 +1,26 @@
 
     {% extends "template.html" %}
     {% block content %}
-        <h2>Welcome to the flask blog</h2>
-        <h3>Please login</h3>
-        <p>Temp Log in: <a href="/main"> Login</a></p>
+        <!--<h2>Welcome to the flask blog</h2>-->
+        <!--<h3>Please login</h3>-->
+        <!--<p>Temp Log in: <a href="/main"> Login</a></p>-->
+        <div class="login-wrapper">
+            <h2>welcome to the flask micro blog</h2>
+            <h3>Please log in to access your blog</h3>
+            <form action="" method="POST">
+                <div>
+                    <label for="name">Username:</label>
+                    <input type="text" id="username" name="username" value="{{request.form.username}}">
+                </div>
+                <div>
+                    <label for="password">
+                        password:
+                    </label>
+                    <input type="text" id="password" name="password" value="{{request.form.password}}">
+                </div>
+                <div>
+                    <button type="submit">LOG IN</button>
+                </div>
+            </form>
+        </div>
     {% endblock %}
