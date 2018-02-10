@@ -4,6 +4,7 @@
 #imports
 from flask import Flask, render_template, request, session, flash, redirect, url_for, g
 import sqlite3
+from functools import wraps
 
 #configuration
 DATABASE = 'blog.db'
@@ -11,16 +12,25 @@ USERNAME = 'admin'
 PASSWORD = 'admin'
 SECRET_KEY = '\xfas\x1c\xc0\xae\x1d\x95 \x06\xe7\xa7\nn\x1e\xb2\xfc&\xcb\xebZ\xdd\xec)\xbe'
 
-
-
 app = Flask(__name__)
 
 #pulls in app configuration by looking for UPPERCASE variables
-app.config.from_object(__name__)
+app.config.from_object(__name__) 
 
 #function used for connecting the database
 def coonect_db():
     return sqlite3.connect(app.config['DATABASE'])
+
+#login required function
+def login_required(test):
+    @wraps(test)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return test(*args, **kwargs)
+        else:
+            flash('you need to login first')
+            return redirect(url_for('login'))
+    return wrap
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -36,6 +46,7 @@ def login():
     return render_template('login.html', error = error), status_code
 
 @app.route('/main')
+@login_required
 def main():
     return render_template('main.html')
 
