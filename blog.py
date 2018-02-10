@@ -18,7 +18,7 @@ app = Flask(__name__)
 app.config.from_object(__name__) 
 
 #function used for connecting the database
-def coonect_db():
+def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
 
 #login required function
@@ -48,8 +48,28 @@ def login():
 @app.route('/main')
 @login_required
 def main():
-    return render_template('main.html')
+    g.db = connect_db()
+    cur = g.db.execute('select * from posts')
+    posts = [dict(title= row[0], post=row[1]) for row in cur.fetchall()]
+    g.db.close()
+    return render_template('main.html',posts = posts)
 
+#add post function
+@app.route('/add', methods=['POST'])
+@login_required
+def add():
+    title = request.form['title']
+    posts = request.form['posts']
+    if not title or not posts:
+        flash('all fields are required')
+        return redirect(url_for('main'))
+    else:
+        g.db = connect_db()
+        g.db.execute('insert into posts (title, posts) values(?, ?)', [request.form['title'], request.form['posts']])
+        g.db.commit()
+        g.db.close()
+        flash('new entry was successfully posted')
+        return redirect(url_for('main'))
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
